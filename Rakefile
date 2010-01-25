@@ -43,12 +43,12 @@ def get_stage_database_config(database_config)
 end
 
 def stage_data(sql_file, stage_config)
-  puts "mysql --host=#{stage_config["host"]} --user=#{stage_config["username"]} --password=#{stage_config["password"]} #{stage_config["database"]} < #{sql_file}"
-  `mysql --host=#{stage_config["host"]} --user=#{stage_config["username"]} --password=#{stage_config["password"]} #{stage_config["database"]} < #{sql_file}`
+  puts "mysql --host=#{stage_config["host"]} --user=#{stage_config["user"]} --password=#{stage_config["password"]} #{stage_config["database"]} < #{sql_file}"
+  `mysql --host=#{stage_config["host"]} --user=#{stage_config["user"]} --password=#{stage_config["password"]} #{stage_config["database"]} < #{sql_file}`
 end
 
 def reset_data(stage_config, specified_values, sensitive_fields)
-  connection = Mysql.connect(stage_config["host"], stage_config["username"], stage_config["password"], stage_config["database"])
+  connection = Mysql.connect(stage_config["host"], stage_config["user"], stage_config["password"], stage_config["database"])
   unless(specified_values.nil?)
     specified_values.each do |table_name, table|
       table.each do |column, value|
@@ -61,8 +61,8 @@ def reset_data(stage_config, specified_values, sensitive_fields)
   unless(sensitive_fields.nil?)
     sensitive_fields.each do |table, column|
       statement = connection.prepare("update #{table} set #{column} = ? where id = ?")
-      query = connection.query("select id from #{table}").each do |id|
-        statement.execute(get_forgery_string(column), id)
+      connection.query("select id from #{table}").each do |id|
+        statement.execute(get_forgery_string(column), id[0])
       end
       statement.close
     end
