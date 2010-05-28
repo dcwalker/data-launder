@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+
+require 'quickconnect'
+require File.expand_path(File.join(File.dirname(__FILE__), %w[.. lib data_launder]))
+
+if ARGV.size.zero?
+  puts "Usage: launder SOURCE [data to] DESTINATION"
+  puts "Example: launder production data to staging"
+else
+  source = ARGV[0]
+  destination = (ARGV.size == 4) ? ARGV[3] : ARGV[1]
+
+  source_database_config = QuickConnect.get_database_config('config/database.yml', source)
+  source_connect_opts_string = QuickConnect.get_mysql_connect_options(database_config)
+  destination_database_config = QuickConnect.get_database_config('config/database.yml', destination)
+  destination_connect_opts_string = QuickConnect.get_mysql_connect_options(destination_database_config)
+
+  puts "Fetching data from #{source}"
+  path_to_data = DataLaunder.fetch_data_from_source(source_connect_opts_string)
+  puts path_to_data
+
+  puts "Loading #{source} data on #{destination} database"
+  DataLaunder.load_data_on_destination(destination_connect_opts_string, path_to_data)
+  puts "done."
+end
+
