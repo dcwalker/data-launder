@@ -5,8 +5,8 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "data-launder"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{TODO: longer description of your gem}
+    gem.summary = %Q{Move data from one database to another with the help of Rails}
+    gem.description = %Q{Using the local database configuration, copy data from one environment to another.}
     gem.email = "dan.walker@gmail.com"
     gem.homepage = "http://github.com/dcwalker/data-launder"
     gem.authors = ["Dan Walker"]
